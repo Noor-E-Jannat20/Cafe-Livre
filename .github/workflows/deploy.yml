@@ -31,6 +31,10 @@ jobs:
         working-directory: short_story_store_app
         run: npm ci
 
+      - name: Fix Vite executable permissions
+        working-directory: short_story_store_app
+        run: chmod +x node_modules/.bin/vite
+
       - name: Build React app
         working-directory: short_story_store_app
         run: npm run build
