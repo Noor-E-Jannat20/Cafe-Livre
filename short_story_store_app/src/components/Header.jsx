@@ -10,23 +10,31 @@ export default function Header({
   showFavoritesOnly,
   onToggleFavoritesOnly,
   onOpenAuth,
-  onOpenLibrary,
+  onNavigate,
+  view,
   onOpenSell,
 }) {
-  const { theme, toggleTheme, session, currentUser, logout } = useApp();
+  const { theme, toggleTheme, session, currentUser, logout, unreadRecommendations, incomingRequests } = useApp();
   const [menuOpen, setMenuOpen] = useState(false);
+  const alerts = unreadRecommendations + incomingRequests.length;
+  const type = currentUser?.type;
+
+  function go(v, tab) {
+    onNavigate(v, tab);
+    setMenuOpen(false);
+  }
 
   return (
     <header className="site-header">
       <div className="wrap glass header-bar">
-        <div className="brand">
+        <button className="brand brand-btn" onClick={() => go('shop')} aria-label="Cafe Livre home">
           <BrandMark />
           Cafe Livre - A Short Story Store
-        </div>
+        </button>
         <div className="header-actions">
           <ThemeToggle theme={theme} onToggle={toggleTheme} />
 
-          {currentUser && ['seller', 'admin'].includes(currentUser.type) && (
+          {(type === 'seller' || type === 'admin') && (
             <button className="btn-ghost sell-btn" onClick={onOpenSell}>
               + Sell a story
             </button>
@@ -51,27 +59,43 @@ export default function Header({
 
           {session ? (
             <div className="account-menu">
-              <button className="icon-btn account-avatar" onClick={() => setMenuOpen((v) => !v)} aria-label="Account menu">
+              <button
+                className="icon-btn account-avatar"
+                onClick={() => setMenuOpen((v) => !v)}
+                aria-label={`Account menu${alerts ? `, ${alerts} new` : ''}`}
+                aria-expanded={menuOpen}
+              >
                 {session.slice(0, 1).toUpperCase()}
+                {alerts > 0 && <span className="cart-count">{alerts}</span>}
               </button>
               {menuOpen && (
                 <div className="account-dropdown glass">
                   <div className="account-name">{currentUser?.displayName || session}</div>
-                  <div className="account-type">{currentUser?.type}</div>
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      onOpenLibrary();
-                      setMenuOpen(false);
-                    }}
-                  >
-                    My library
-                  </button>
+                  <div className="account-type">{type}</div>
+                  <button className="dropdown-item" onClick={() => go('shop')}>Browse stories</button>
+                  {type !== 'admin' && (
+                    <>
+                      <button className="dropdown-item" onClick={() => go('account', 'recommended')}>
+                        Recommended for me{unreadRecommendations > 0 ? ` (${unreadRecommendations} new)` : ''}
+                      </button>
+                      <button className="dropdown-item" onClick={() => go('account', 'wishlist')}>Wishlist</button>
+                      <button className="dropdown-item" onClick={() => go('account', 'history')}>Purchase history</button>
+                      <button className="dropdown-item" onClick={() => go('account', 'friends')}>
+                        Friends{incomingRequests.length > 0 ? ` (${incomingRequests.length} request${incomingRequests.length > 1 ? 's' : ''})` : ''}
+                      </button>
+                    </>
+                  )}
+                  {type === 'seller' && (
+                    <button className="dropdown-item" onClick={() => go('seller')}>Seller dashboard</button>
+                  )}
+                  {type === 'admin' && (
+                    <button className="dropdown-item" onClick={() => go('admin')}>Admin dashboard</button>
+                  )}
                   <button
                     className="dropdown-item"
                     onClick={() => {
                       logout();
-                      setMenuOpen(false);
+                      go('shop');
                     }}
                   >
                     Log out
@@ -86,6 +110,7 @@ export default function Header({
           )}
         </div>
       </div>
+      {view !== 'shop' && <span className="sr-only" aria-live="polite">{`Viewing ${view}`}</span>}
     </header>
   );
 }

@@ -7,6 +7,7 @@ export const seedOffers = [
     adminId: 'admin',
     description: '$0.50 off your first order',
     amount: 0.5,
+    firstOrderOnly: true,
     validUntil: '2027-01-01',
   },
   {

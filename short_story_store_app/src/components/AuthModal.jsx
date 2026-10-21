@@ -77,7 +77,7 @@ export default function AuthModal({ onClose }) {
                 </select>
               </label>
               <label>
-                Referred by (optional)
+                Referred by (optional, you’ll be friends)
                 <input
                   value={form.referredBy}
                   onChange={(e) => update('referredBy', e.target.value)}
@@ -95,8 +95,8 @@ export default function AuthModal({ onClose }) {
 
           {mode === 'login' && (
             <p className="auth-hint">
-              Try <code>reader.demo</code> / <code>reader123</code>, or <code>priya.sundaram</code> /{' '}
-              <code>seller123</code> for a seller account.
+              Try <code>reader.demo</code> / <code>reader123</code> (buyer), <code>priya.sundaram</code> /{' '}
+              <code>seller123</code> (seller), or <code>admin</code> / <code>admin123</code> (admin).
             </p>
           )}
         </form>

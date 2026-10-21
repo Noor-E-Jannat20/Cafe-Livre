@@ -23,3 +23,25 @@ export const seedResponses = {
     { username: 'reader.demo', responses: 'Made me nervous to text anyone "on my way!" for a week.', date: '2026-08-20' },
   ],
 };
+
+// Friendships are stored both ways: username -> [friend usernames].
+export const seedFriends = {
+  'reader.demo': ['mira.reads'],
+  'mira.reads': ['reader.demo'],
+};
+
+export const seedFriendRequests = [
+  { id: 'fr-seed-1', from: 'noor.page', to: 'reader.demo', date: '2026-10-18' },
+];
+
+export const seedRecommendations = [
+  {
+    id: 'rec-seed-1',
+    from: 'mira.reads',
+    to: 'reader.demo',
+    storyId: 'nine-minutes-of-gravity',
+    note: 'Short, strange and lovely. Read it on a quiet evening.',
+    date: '2026-10-19',
+    read: false,
+  },
+];

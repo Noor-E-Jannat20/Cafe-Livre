@@ -1,4 +1,5 @@
 import { StarDisplay, average } from './RatingStars';
+import CoverArt from './CoverArt';
 
 export default function StoryCard({ story, isFav, inCart, ratingMap, onOpen, onToggleFav, onToggleCart }) {
   const avg = average(ratingMap);
@@ -6,6 +7,9 @@ export default function StoryCard({ story, isFav, inCart, ratingMap, onOpen, onT
 
   return (
     <article className={`story-card glass accent-${story.accent}`}>
+      <button className="card-cover" onClick={() => onOpen(story.id)} aria-label={`Open ${story.title}`}>
+        <CoverArt story={story} />
+      </button>
       <div className="card-top-row">
         <span className="genre-tag">{story.genre}</span>
         <span className="price-tag">${story.price.toFixed(2)}</span>
