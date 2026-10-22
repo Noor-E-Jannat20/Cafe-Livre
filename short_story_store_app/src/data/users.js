@@ -9,7 +9,7 @@ export const seedUsers = [
     dateOfCreation: '2024-01-01',
     type: 'admin',
     phone: '+1 555 0100',
-    displayName: 'Loose Leaf HQ',
+    displayName: 'Cafe Livre HQ',
   },
   {
     username: 'reader.demo',

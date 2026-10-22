@@ -16,6 +16,7 @@ export default function StoryModal({
   onToggleCart,
   onOpenStory,
   onRecommend,
+  onEdit,
 }) {
   const { session, ratings, responses, saveReview, deleteReview, isAdmin, ownedIds, stories } = useApp();
   const panelRef = useRef(null);
@@ -62,7 +63,6 @@ export default function StoryModal({
     .filter(Boolean);
 
   const opening = paragraphs[0] || '';
-  const fullStory = paragraphs.join('\n\n');
 
   const owned = ownedIds.includes(story.id);
   const isOwnStory = session === story.sellerId;
@@ -165,6 +165,12 @@ export default function StoryModal({
           <button className="btn-ghost" type="button" onClick={() => onRecommend(story.id)}>
             Recommend to a friend
           </button>
+
+          {(isAdmin || isOwnStory) && (
+            <button className="btn-ghost" type="button" onClick={() => onEdit(story)}>
+              ✎ Edit details
+            </button>
+          )}
         </div>
 
         <div className="modal-section">

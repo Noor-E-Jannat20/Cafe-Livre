@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import ThemeToggle from './ThemeToggle';
 import BrandMark from './BrandMark';
 import { useApp } from '../state/store';
@@ -12,25 +11,49 @@ export default function Header({
   onOpenAuth,
   onNavigate,
   view,
+  accountTab,
   onOpenSell,
 }) {
   const { theme, toggleTheme, session, currentUser, logout, unreadRecommendations, incomingRequests } = useApp();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const alerts = unreadRecommendations + incomingRequests.length;
   const type = currentUser?.type;
 
-  function go(v, tab) {
-    onNavigate(v, tab);
-    setMenuOpen(false);
+  // Links shown in the top bar, by role. `badge` is a small count for things needing attention.
+  const links = [{ key: 'shop', label: 'Browse', view: 'shop' }];
+  if (session && type !== 'admin') {
+    links.push(
+      { key: 'recommended', label: 'Recommended', view: 'account', tab: 'recommended', badge: unreadRecommendations },
+      { key: 'wishlist', label: 'Wishlist', view: 'account', tab: 'wishlist' },
+      { key: 'history', label: 'History', view: 'account', tab: 'history' },
+      { key: 'friends', label: 'Friends', view: 'account', tab: 'friends', badge: incomingRequests.length }
+    );
   }
+  if (type === 'seller') links.push({ key: 'seller', label: 'Dashboard', view: 'seller' });
+  if (type === 'admin') links.push({ key: 'admin', label: 'Admin dashboard', view: 'admin' });
+
+  const isActive = (l) => (l.view === 'account' ? view === 'account' && accountTab === l.tab : view === l.view);
 
   return (
     <header className="site-header">
       <div className="wrap glass header-bar">
-        <button className="brand brand-btn" onClick={() => go('shop')} aria-label="Cafe Livre home">
+        <button className="brand brand-btn" onClick={() => onNavigate('shop')} aria-label="Cafe Livre home">
           <BrandMark />
           Cafe Livre - A Short Story Store
         </button>
+
+        <nav className="header-nav" aria-label="Main">
+          {links.map((l) => (
+            <button
+              key={l.key}
+              className={`nav-link${isActive(l) ? ' active' : ''}`}
+              aria-current={isActive(l) ? 'page' : undefined}
+              onClick={() => onNavigate(l.view, l.tab)}
+            >
+              {l.label}
+              {l.badge > 0 && <span className="nav-badge" aria-label={`${l.badge} new`}>{l.badge}</span>}
+            </button>
+          ))}
+        </nav>
+
         <div className="header-actions">
           <ThemeToggle theme={theme} onToggle={toggleTheme} />
 
@@ -44,7 +67,7 @@ export default function Header({
             className="icon-btn"
             aria-pressed={showFavoritesOnly}
             aria-label={`${favCount} wishlist items, ${showFavoritesOnly ? 'showing wishlist only' : 'show wishlist only'}`}
-            title="Wishlist"
+            title="Filter shelf by wishlist"
             onClick={onToggleFavoritesOnly}
             style={showFavoritesOnly ? { boxShadow: '0 0 0 3px rgba(255,157,187,0.5)' } : undefined}
           >
@@ -58,51 +81,24 @@ export default function Header({
           </button>
 
           {session ? (
-            <div className="account-menu">
+            <>
+              <span className="user-chip" title={`Signed in as ${currentUser?.displayName || session} (${type})`}>
+                <span className="account-avatar-dot">{session.slice(0, 1).toUpperCase()}</span>
+                <span className="user-chip-text">
+                  {currentUser?.displayName || session}
+                  <small>{type}</small>
+                </span>
+              </span>
               <button
-                className="icon-btn account-avatar"
-                onClick={() => setMenuOpen((v) => !v)}
-                aria-label={`Account menu${alerts ? `, ${alerts} new` : ''}`}
-                aria-expanded={menuOpen}
+                className="btn-ghost nav-logout"
+                onClick={() => {
+                  logout();
+                  onNavigate('shop');
+                }}
               >
-                {session.slice(0, 1).toUpperCase()}
-                {alerts > 0 && <span className="cart-count">{alerts}</span>}
+                Log out
               </button>
-              {menuOpen && (
-                <div className="account-dropdown glass">
-                  <div className="account-name">{currentUser?.displayName || session}</div>
-                  <div className="account-type">{type}</div>
-                  <button className="dropdown-item" onClick={() => go('shop')}>Browse stories</button>
-                  {type !== 'admin' && (
-                    <>
-                      <button className="dropdown-item" onClick={() => go('account', 'recommended')}>
-                        Recommended for me{unreadRecommendations > 0 ? ` (${unreadRecommendations} new)` : ''}
-                      </button>
-                      <button className="dropdown-item" onClick={() => go('account', 'wishlist')}>Wishlist</button>
-                      <button className="dropdown-item" onClick={() => go('account', 'history')}>Purchase history</button>
-                      <button className="dropdown-item" onClick={() => go('account', 'friends')}>
-                        Friends{incomingRequests.length > 0 ? ` (${incomingRequests.length} request${incomingRequests.length > 1 ? 's' : ''})` : ''}
-                      </button>
-                    </>
-                  )}
-                  {type === 'seller' && (
-                    <button className="dropdown-item" onClick={() => go('seller')}>Seller dashboard</button>
-                  )}
-                  {type === 'admin' && (
-                    <button className="dropdown-item" onClick={() => go('admin')}>Admin dashboard</button>
-                  )}
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      logout();
-                      go('shop');
-                    }}
-                  >
-                    Log out
-                  </button>
-                </div>
-              )}
-            </div>
+            </>
           ) : (
             <button className="btn-primary" style={{ padding: '10px 20px', border: 'none' }} onClick={onOpenAuth}>
               Log in
@@ -110,7 +106,6 @@ export default function Header({
           )}
         </div>
       </div>
-      {view !== 'shop' && <span className="sr-only" aria-live="polite">{`Viewing ${view}`}</span>}
     </header>
   );
 }

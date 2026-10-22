@@ -10,7 +10,7 @@ export default function Hero({ storyCount, onBrowse }) {
           </span>
           <h1>Small stories, poured by the cup.</h1>
           <p className="hero-sub">
-            Loose Leaf is a corner shop for fiction you can finish in one sitting — a
+            Cafe Livre is a corner shop for fiction you can finish in one sitting — a
             handful of pages, a full feeling. Browse the shelf, steep something short,
             keep the ones that stay with you.
           </p>

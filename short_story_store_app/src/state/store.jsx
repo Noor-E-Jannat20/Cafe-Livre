@@ -4,13 +4,18 @@ import { seedUsers } from '../data/users';
 import { seedOffers } from '../data/offers';
 import { seedRatings, seedResponses, seedFriends, seedFriendRequests, seedRecommendations } from '../data/seedActivity';
 
-const STORAGE_KEY = 'loose-leaf-state-v2';
+const STORAGE_KEY = 'cafe-livre-state-v1';
+const LEGACY_KEY = 'loose-leaf-state-v2'; // earlier builds saved under the old name; still read it once
 const AppCtx = createContext(null);
 
 function loadSaved() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
+    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_KEY);
+    const data = raw ? JSON.parse(raw) : {};
+    if (data.users) {
+      data.users = data.users.map((u) => (u.displayName === 'Loose Leaf HQ' ? { ...u, displayName: 'Cafe Livre HQ' } : u));
+    }
+    return data;
   } catch {
     return {};
   }

@@ -67,7 +67,7 @@ export default function SellerDashboard({ onSell, onEdit, onOpenStory }) {
                           <td><StarDisplay value={average(map)} count={map ? Object.keys(map).length : 0} /></td>
                           <td><span className={`status-pill ${s.status === 'hidden' ? 'off' : 'on'}`}>{s.status === 'hidden' ? 'Unlisted' : 'Listed'}</span></td>
                           <td className="row-actions">
-                            <button className="remove-btn" onClick={() => onEdit(s)}>edit</button>
+                            <button className="btn-ghost mini-btn" onClick={() => onEdit(s)}>✎ Edit</button>
                             <button className="remove-btn" onClick={() => setStoryStatus(s.id, s.status === 'hidden' ? 'listed' : 'hidden')}>
                               {s.status === 'hidden' ? 'list' : 'unlist'}
                             </button>

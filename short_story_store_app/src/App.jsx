@@ -111,6 +111,7 @@ export default function App() {
         onOpenAuth={() => setAuthOpen(true)}
         onNavigate={navigate}
         view={activeView}
+        accountTab={accountTab}
         onOpenSell={() => setSellState({})}
       />
 
@@ -154,6 +155,7 @@ export default function App() {
                   cart={cart}
                   ratings={ratings}
                   onOpen={setOpenStoryId}
+                  onEdit={(story) => setSellState({ story })}
                   onToggleFav={toggleWishlist}
                   onToggleCart={toggleCart}
                 />
@@ -191,6 +193,7 @@ export default function App() {
           onToggleCart={toggleCart}
           onOpenStory={setOpenStoryId}
           onRecommend={handleRecommend}
+          onEdit={(story) => setSellState({ story })}
         />
       )}
 

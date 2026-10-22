@@ -1,7 +1,7 @@
 import { StarDisplay, average } from './RatingStars';
 import CoverArt from './CoverArt';
 
-export default function StoryCard({ story, isFav, inCart, ratingMap, onOpen, onToggleFav, onToggleCart }) {
+export default function StoryCard({ story, isFav, inCart, ratingMap, canEdit, onEdit, onOpen, onToggleFav, onToggleCart }) {
   const avg = average(ratingMap);
   const count = ratingMap ? Object.keys(ratingMap).length : 0;
 
@@ -21,6 +21,11 @@ export default function StoryCard({ story, isFav, inCart, ratingMap, onOpen, onT
       <StarDisplay value={avg} count={count} />
       <p className="story-blurb">{story.blurb}</p>
       <p className="sale-count">{story.saleCount} sold</p>
+      {canEdit && (
+        <button className="btn-ghost edit-story-btn" onClick={() => onEdit(story)}>
+          ✎ Edit details
+        </button>
+      )}
       <div className="card-bottom-row">
         <button className="read-btn" onClick={() => onOpen(story.id)}>
           Read the opening

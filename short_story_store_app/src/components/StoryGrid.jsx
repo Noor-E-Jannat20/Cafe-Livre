@@ -1,6 +1,8 @@
 import StoryCard from './StoryCard';
+import { useApp } from '../state/store';
 
-export default function StoryGrid({ stories, favorites, cart, ratings, onOpen, onToggleFav, onToggleCart }) {
+export default function StoryGrid({ stories, favorites, cart, ratings, onOpen, onEdit, onToggleFav, onToggleCart }) {
+  const { session, isAdmin } = useApp();
   if (stories.length === 0) {
     return (
       <div className="glass" style={{ padding: '40px', textAlign: 'center', color: 'var(--ink-faint)' }}>
@@ -18,6 +20,8 @@ export default function StoryGrid({ stories, favorites, cart, ratings, onOpen, o
           isFav={favorites.includes(story.id)}
           inCart={cart.includes(story.id)}
           ratingMap={ratings[story.id]}
+          canEdit={isAdmin || (!!session && story.sellerId === session)}
+          onEdit={onEdit}
           onOpen={onOpen}
           onToggleFav={onToggleFav}
           onToggleCart={onToggleCart}
