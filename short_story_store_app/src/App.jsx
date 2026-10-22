@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
-import Header from './components/Header';
+import Sidebar from './components/Sidebar';
+import Icon from './components/Icons';
 import Hero from './components/Hero';
 import GenreFilter from './components/GenreFilter';
 import StoryGrid from './components/StoryGrid';
@@ -40,7 +41,26 @@ export default function App() {
   const [authOpen, setAuthOpen] = useState(false);
   const [sellState, setSellState] = useState(null); // null | { story?: story }
   const [recommendId, setRecommendId] = useState(null);
+  const [collapsed, setCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('cafe-livre-sidebar') === 'collapsed';
+    } catch {
+      return false;
+    }
+  });
+  const [mobileNav, setMobileNav] = useState(false);
   const shelfRef = useRef(null);
+
+  function toggleCollapsed() {
+    setCollapsed((c) => {
+      try {
+        localStorage.setItem('cafe-livre-sidebar', c ? 'open' : 'collapsed');
+      } catch {
+        /* preference just won't persist */
+      }
+      return !c;
+    });
+  }
 
   const role = currentUser?.type;
   let activeView = view;
@@ -93,16 +113,31 @@ export default function App() {
 
   return (
     <>
-      <Header
+    <div className={`shell${collapsed ? ' collapsed' : ''}${mobileNav ? ' mobile-open' : ''}`}>
+      <Sidebar
+        collapsed={collapsed}
+        onToggleCollapsed={toggleCollapsed}
+        onCloseMobile={() => setMobileNav(false)}
         cartCount={cart.length}
-        onOpenCart={handleOpenCart}
         favCount={wishlist.length}
+        onOpenCart={handleOpenCart}
         onOpenAuth={() => setAuthOpen(true)}
         onNavigate={navigate}
         view={activeView}
         accountTab={accountTab}
         onOpenSell={() => setSellState({})}
       />
+      {mobileNav && <div className="side-backdrop" onMouseDown={() => setMobileNav(false)} />}
+
+      <div className="shell-main">
+      <div className="mobile-bar glass">
+        <button className="icon-btn" onClick={() => setMobileNav(true)} aria-label="Open menu"><Icon name="menu" /></button>
+        <span className="mobile-brand">Cafe Livre</span>
+        <button className="icon-btn" onClick={handleOpenCart} aria-label="Open cart">
+          <Icon name="cart" />
+          {cart.length > 0 && <span className="cart-count">{cart.length}</span>}
+        </button>
+      </div>
 
       <main>
         {activeView === 'shop' && (
@@ -171,6 +206,8 @@ export default function App() {
       </main>
 
       <Footer />
+      </div>
+    </div>
 
       {openStory && (
         <StoryModal
