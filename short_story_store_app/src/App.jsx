@@ -34,7 +34,6 @@ export default function App() {
   const [activeGenre, setActiveGenre] = useState('All');
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState('featured');
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [openStoryId, setOpenStoryId] = useState(null);
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
@@ -54,18 +53,11 @@ export default function App() {
   function navigate(v, tab) {
     setView(v);
     if (tab) setAccountTab(tab);
-    if (v !== 'shop') setShowFavoritesOnly(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function scrollToShelf() {
     shelfRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  function handleToggleFavoritesOnly() {
-    if (!session) return setAuthOpen(true);
-    setView('shop');
-    setShowFavoritesOnly((v) => !v);
   }
 
   function handleOpenCart() {
@@ -82,7 +74,6 @@ export default function App() {
     const q = query.trim().toLowerCase();
     const list = shelfStories.filter((s) => {
       if (activeGenre !== 'All' && s.genre !== activeGenre) return false;
-      if (showFavoritesOnly && !wishlist.includes(s.id)) return false;
       if (q && !`${s.title} ${s.author} ${s.sellerId} ${s.blurb}`.toLowerCase().includes(q)) return false;
       return true;
     });
@@ -93,7 +84,7 @@ export default function App() {
       high: (a, b) => b.price - a.price,
     }[sort];
     return by ? [...list].sort(by) : list;
-  }, [shelfStories, activeGenre, showFavoritesOnly, wishlist, query, sort, ratings]);
+  }, [shelfStories, activeGenre, query, sort, ratings]);
 
   const openStory = stories.find((s) => s.id === openStoryId) || null;
   const recommendStory = stories.find((s) => s.id === recommendId) || null;
@@ -106,8 +97,6 @@ export default function App() {
         cartCount={cart.length}
         onOpenCart={handleOpenCart}
         favCount={wishlist.length}
-        showFavoritesOnly={showFavoritesOnly}
-        onToggleFavoritesOnly={handleToggleFavoritesOnly}
         onOpenAuth={() => setAuthOpen(true)}
         onNavigate={navigate}
         view={activeView}
@@ -131,7 +120,7 @@ export default function App() {
             <section className="section" ref={shelfRef}>
               <div className="wrap">
                 <div className="section-head">
-                  <h2>{showFavoritesOnly ? 'Your wishlist' : 'Browse the shelf'}</h2>
+                  <h2>Browse the shelf</h2>
                   <p>{visibleStories.length} of {shelfStories.length} stories</p>
                 </div>
                 <div className="browse-tools">
