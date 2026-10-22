@@ -15,7 +15,6 @@ React + Vite storefront for short stories. Data lives in the browser (localStora
 | Seller | `priya.sundaram`  | `seller123` |
 | Admin  | `admin`           | `admin123`  |
 
-Demo passwords are stored in plain text because there is no server. Never do this in production.
 
 ## What's in it
 
